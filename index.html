@@ -126,7 +126,7 @@
 <body>
 
 <header>
-  <h1>📋 Mapa de Contratos — Feria Abril 2026 v1.0</h1>
+  <h1>📋 Mapa de Contratos — Feria Abril 2026</h1>
   <p id="subtitle">Sincronizando datos...</p>
 </header>
 
@@ -503,6 +503,7 @@ async function firmarContrato() {
       if (!d.ok) throw new Error('Error en chunk ' + i + ': ' + (d.error || ''));
       toast.textContent = `⏳ Subiendo... ${Math.round((i+1)/totalChunks*100)}%`;
       toast.className   = 'modal-toast';
+      await new Promise(res => setTimeout(res, 10)); // fuerza repintado
     }
 
     // Confirmar el archivo completo

@@ -126,7 +126,7 @@
 <body>
 
 <header>
-  <h1>📋 Mapa de Contratos — Feria Abril 2026</h1>
+  <h1>📋 Mapa de Contratos — Feria Abril 2026 v1.0</h1>
   <p id="subtitle">Sincronizando datos...</p>
 </header>
 
@@ -485,7 +485,7 @@ async function firmarContrato() {
 
   try {
     // Enviar base64 en chunks para evitar 413 (URL demasiado larga)
-    const CHUNK_SIZE = 20000; // ~20KB por request (limite URL ~8000 chars codificados)
+    const CHUNK_SIZE = 5000; // 5000 chars base64 → ~7000 chars URL-encoded → caben en GET
     const totalChunks = Math.ceil(archivoBase64.length / CHUNK_SIZE);
     const uploadId = Date.now() + '_' + modalStandId;
     const sep = API_URL.includes('?') ? '&' : '?';

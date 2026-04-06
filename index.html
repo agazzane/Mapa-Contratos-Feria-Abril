@@ -244,7 +244,7 @@
 </div>
 
 <!-- INPUT FILE oculto -->
-<input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" onchange="archivoSeleccionado(this)">
+<input type="file" id="fileInput" accept=".pdf" onchange="archivoSeleccionado(this)">
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
@@ -485,7 +485,7 @@ async function firmarContrato() {
 
   try {
     // Enviar base64 en chunks para evitar 413 (URL demasiado larga)
-    const CHUNK_SIZE = 5000; // 5000 chars base64 → ~7000 chars URL-encoded → caben en GET
+    const CHUNK_SIZE = 3000; // 3000 chars base64url → URL ~3000 chars → no hay redirect de Google
     const totalChunks = Math.ceil(archivoBase64.length / CHUNK_SIZE);
     const uploadId = Date.now() + '_' + modalStandId;
     const sep = API_URL.includes('?') ? '&' : '?';
@@ -493,11 +493,13 @@ async function firmarContrato() {
     // Subir chunks
     for (let i = 0; i < totalChunks; i++) {
       const chunk = archivoBase64.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+      // Convertir base64 a base64url: no necesita %XX, no expande la URL
+      const chunkSafe = chunk.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
       const url = API_URL + sep + 'accion=chunk'
         + '&uploadId='    + encodeURIComponent(uploadId)
         + '&chunkIndex='  + i
         + '&totalChunks=' + totalChunks
-        + '&fileData='    + encodeURIComponent(chunk);
+        + '&fileData='    + chunkSafe;
       const r = await fetch(url);
       const d = await r.json();
       if (!d.ok) throw new Error('Error en chunk ' + i + ': ' + (d.error || ''));
